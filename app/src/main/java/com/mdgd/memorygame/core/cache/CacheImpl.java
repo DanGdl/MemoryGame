@@ -4,9 +4,10 @@ import com.mdgd.memorygame.dto.Personality;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class CacheImpl implements ICache {
-
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private final Map<Integer, Personality> personalities = new HashMap<>();
     private int count;
 
@@ -22,16 +23,31 @@ public class CacheImpl implements ICache {
 
     @Override
     public boolean hasPersonality(Integer personalityId) {
-        return personalities.get(personalityId) != null;
+        lock.readLock().lock();
+        try {
+            return personalities.get(personalityId) != null;
+        }finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
     public Personality getPersonality(int personalityId) {
-        return personalities.get(personalityId);
+        lock.readLock().lock();
+        try {
+            return personalities.get(personalityId);
+        }finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
     public void putPersonality(Personality personality) {
-        personalities.put(personality.getId(), personality);
+        lock.writeLock().lock();
+        try {
+            personalities.put(personality.getId(), personality);
+        }finally {
+            lock.writeLock().unlock();
+        }
     }
 }

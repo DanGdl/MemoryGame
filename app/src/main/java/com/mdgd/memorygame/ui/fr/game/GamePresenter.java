@@ -53,8 +53,16 @@ public class GamePresenter extends FragmentPresenter<GameFragmentContract.IView>
         }
         // caching disconnected
         disposables.add(Observable.fromIterable(ids)
-                .map((Integer personalityId) -> network.loadPersonality(personalityId))
-                .map((Personality personality) -> new GameTab(personality))
+                .map((Integer personalityId) -> {
+                    if(cache.hasPersonality(personalityId))
+                        return cache.getPersonality(personalityId);
+                    else return network.loadPersonality(personalityId);
+                })
+                .map((Personality personality) -> {
+                    if(!cache.hasPersonality(personality.getId()))
+                        cache.putPersonality(personality);
+                    return new GameTab(personality);
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .collectInto(new ArrayList<>(), (ArrayList<GameTab> objects, GameTab gameTab) -> {
