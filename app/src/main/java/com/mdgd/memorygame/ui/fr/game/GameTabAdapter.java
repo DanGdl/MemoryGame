@@ -59,11 +59,11 @@ public class GameTabAdapter extends CommonRecyclerAdapter<GameTab> {
 
         @Override
         public void bindItem(GameTab item, int position) {
+            name.setText(item.getName());
+            ImageLoader.load(item.getUrl(), image, R.drawable.ic_no_portrait_24dp);
             if (item.getIsOpened()) {
                 image.setVisibility(View.VISIBLE);
                 name.setVisibility(View.VISIBLE);
-                name.setText(item.getName());
-                ImageLoader.load(item.getUrl(), image, R.drawable.ic_no_portrait_24dp);
             } else {
                 image.setVisibility(View.INVISIBLE);
                 name.setVisibility(View.INVISIBLE);

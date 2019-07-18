@@ -7,7 +7,6 @@ import com.mdgd.memorygame.dto.Personalities;
 import com.mdgd.memorygame.dto.Personality;
 
 import java.io.IOException;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -46,10 +45,8 @@ public class NetworkImpl extends BasicNetwork implements INetwork {
     }
 
     @Override
-    public Callable<Personality> loadPersonality(int personalityId) throws IOException {
-        return () -> {
-            final Response<Personality> execute = service.getPersonality(String.valueOf(personalityId)).execute();
-            return execute.body();
-        };
-    }
+    public Personality loadPersonality(int personalityId) throws IOException {
+        final Response<Personality> execute = service.getPersonality(String.valueOf(personalityId)).execute();
+        return execute.body();
+}
 }

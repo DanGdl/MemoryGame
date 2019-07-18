@@ -51,41 +51,26 @@ public class GamePresenter extends FragmentPresenter<GameFragmentContract.IView>
             }
             ids.add(id);
         }
-
+        // caching disconnected
         disposables.add(Observable.fromIterable(ids)
-                .subscribe((Integer personalityId) ->
-                        disposables.add(Observable.fromCallable(network.loadPersonality(personalityId))
-                        //disposables.add(Observable.generate((Emitter<Personality> objectEmitter) -> {
-//                            if (cache.hasPersonality(personalityId)) {
-//                                Log.d("GAME_RX", "In cache " + personalityId);
-//                                objectEmitter.onNext(cache.getPersonality(personalityId));
-//                            }
-//                            else
-                                //objectEmitter.onNext();
-                        //})
-                        .map((Personality personality) -> {
-//                            if (!cache.hasPersonality(personality.getId()))
-//                                cache.putPersonality(personality);
-                            return new GameTab(personality);
-                        })
-                        .collectInto(new ArrayList<>(), (ArrayList<GameTab> objects, GameTab gameTab) -> {
-                            objects.add(gameTab);
-                            objects.add(gameTab);
-                        })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe((ArrayList<GameTab> gameTabs, Throwable throwable) -> {
-                            view.hideProgress();
-                            if (throwable != null) {
-                                throwable.printStackTrace();
-                                view.showToast(R.string.request_failed);
-                            } else {
-                                Collections.shuffle(gameTabs);
-                                view.showGame(gameTabs);
-                            }
-                        }))
-                ));
-
+                .map((Integer personalityId) -> network.loadPersonality(personalityId))
+                .map((Personality personality) -> new GameTab(personality))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .collectInto(new ArrayList<>(), (ArrayList<GameTab> objects, GameTab gameTab) -> {
+                    objects.add(gameTab);
+                    objects.add(gameTab.clone());
+                })
+                .subscribe((ArrayList<GameTab> gameTabs, Throwable throwable) -> {
+                    view.hideProgress();
+                    if (throwable != null) {
+                        throwable.printStackTrace();
+                        view.showToast(R.string.request_failed);
+                    } else {
+                        Collections.shuffle(gameTabs);
+                        view.showGame(gameTabs);
+                    }
+                }));
     }
 
     @Override
