@@ -27,7 +27,7 @@ public class SplashPresenter extends FragmentPresenter<SplashFragmentContract.IV
     public void loadPersonalities() {
         network.loadPersonalities((Result<Personalities> result) -> {
             if (result.isFail()) {
-                view.showToast(R.string.request_failed);
+                view.showToast(view.getString(R.string.request_failed, result.error.getMessage()));
             } else {
                 cache.putPersonalitiesCount(result.data.getInfo().getCount());
                 view.proceedToGame();

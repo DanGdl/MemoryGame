@@ -1,6 +1,7 @@
 package com.mdgd.memorygame.ui.fr.splash;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -37,5 +38,10 @@ public class SplashFragment extends HostedFragment<SplashFragmentContract.IPrese
     @Override
     public void proceedToGame() {
         if (host != null) host.proceedToGame();
+    }
+
+    @Override
+    public void showToast(String string) {
+        Toast.makeText(getActivity(), string, Toast.LENGTH_LONG).show();
     }
 }

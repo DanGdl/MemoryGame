@@ -14,6 +14,10 @@ public class SplashFragmentContract {
 
     public interface IView extends FragmentContract.IView {
         void proceedToGame();
+
+        String getString(int strResId, Object... message);
+
+        void showToast(String string);
     }
 
     public interface IHost extends FragmentContract.IHost {

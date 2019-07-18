@@ -31,6 +31,10 @@ public class GameFragmentContract {
         void showGameWon();
 
         boolean areAllTabsOpened();
+
+        String getString(int strResId, Object... message);
+
+        void showToast(String string);
     }
 
     public interface IHost extends FragmentContract.IHost {

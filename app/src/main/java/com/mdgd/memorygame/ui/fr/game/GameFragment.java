@@ -1,6 +1,7 @@
 package com.mdgd.memorygame.ui.fr.game;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -73,5 +74,10 @@ public class GameFragment extends RecyclerFragment<GameFragmentContract.IPresent
     @Override
     public boolean areAllTabsOpened() {
         return ((GameTabAdapter) adapter).areAllTabsOpened();
+    }
+
+    @Override
+    public void showToast(String string) {
+        Toast.makeText(getActivity(), string, Toast.LENGTH_LONG).show();
     }
 }

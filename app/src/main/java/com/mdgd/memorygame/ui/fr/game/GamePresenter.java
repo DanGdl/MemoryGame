@@ -65,7 +65,7 @@ public class GamePresenter extends FragmentPresenter<GameFragmentContract.IView>
                     view.hideProgress();
                     if (throwable != null) {
                         throwable.printStackTrace();
-                        view.showToast(R.string.request_failed);
+                        view.showToast(view.getString(R.string.request_failed, throwable.getMessage()));
                     } else {
                         Collections.shuffle(gameTabs);
                         view.showGame(gameTabs);
