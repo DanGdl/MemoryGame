@@ -10,9 +10,10 @@ import java.util.List;
  * on 07/10/2018.
  */
 public class GameFragmentContract {
-    public static final int DEF_POSITION = -1;
 
     public interface IPresenter extends FragmentContract.IPresenter {
+
+        int getSpanCount();
 
         void createGame();
 
@@ -22,7 +23,6 @@ public class GameFragmentContract {
     }
 
     public interface IView extends FragmentContract.IView {
-        void closeTabsDelayed(int firstPosition, int position);
 
         void showGame(List<GameTab> gameTabs);
 
@@ -35,6 +35,8 @@ public class GameFragmentContract {
         String getString(int strResId, Object... message);
 
         void showToast(String string);
+
+        void closeTabsDelayed(List<Integer> openPositions);
     }
 
     public interface IHost extends FragmentContract.IHost {

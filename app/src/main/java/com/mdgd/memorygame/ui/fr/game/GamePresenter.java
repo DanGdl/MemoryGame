@@ -23,18 +23,28 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class GamePresenter extends FragmentPresenter<GameFragmentContract.IView> implements GameFragmentContract.IPresenter {
 
-    private final int PAIRS_COUNT = 50;
+    private final int TOTAL_CARDS = 36;
+    private final int SAME_CARDS = 3;
+    private final int TOTAL_TRYOUTS = 50;
+    private final int DEF_CARD_ID = -1;
+
     private final CompositeDisposable disposables = new CompositeDisposable();
     private final INetwork network;
     private final ICache cache;
-    private GameTab firstTab;
-    private int firstPosition = GameFragmentContract.DEF_POSITION;
-    private int count = 0;
+    private final List<Integer> openPositions = new ArrayList<>(SAME_CARDS);
+
+    private int cardId = DEF_CARD_ID;
+    private int tryouts = 0;
 
     GamePresenter(GameFragmentContract.IView view, INetwork network, ICache cache) {
         super(view);
         this.network = network;
         this.cache = cache;
+    }
+
+    @Override
+    public int getSpanCount() {
+        return (int)Math.sqrt(TOTAL_CARDS);
     }
 
     @Override
@@ -45,7 +55,7 @@ public class GamePresenter extends FragmentPresenter<GameFragmentContract.IView>
         final List<Integer> ids = new ArrayList<>();
 
         int id = random.nextInt(personalitiesCount);
-        while (ids.size() < 50) {
+        while (ids.size() < TOTAL_CARDS / SAME_CARDS) {
             while (ids.contains(id)) {
                 id = random.nextInt(personalitiesCount);
             }
@@ -67,7 +77,9 @@ public class GamePresenter extends FragmentPresenter<GameFragmentContract.IView>
                 .observeOn(AndroidSchedulers.mainThread())
                 .collectInto(new ArrayList<>(), (ArrayList<GameTab> objects, GameTab gameTab) -> {
                     objects.add(gameTab);
-                    objects.add(gameTab.clone());
+                    for (int i = 1; i < SAME_CARDS; i++) {
+                        objects.add(gameTab.clone());
+                    }
                 })
                 .subscribe((ArrayList<GameTab> gameTabs, Throwable throwable) -> {
                     view.hideProgress();
@@ -83,18 +95,25 @@ public class GamePresenter extends FragmentPresenter<GameFragmentContract.IView>
 
     @Override
     public void onTabSelected(GameTab item, int position) {
-        if (firstTab == null) {
-            firstTab = item;
-            this.firstPosition = position;
+        if (cardId == DEF_CARD_ID) {
+            cardId = item.getId();
+            openPositions.add(position);
             return;
         }
-        count++;
-        if (count >= PAIRS_COUNT) {
+        tryouts++;
+        if (tryouts >= TOTAL_TRYOUTS) {
             view.showGameLost();
         } else {
-            if (firstTab.getId() != item.getId()) view.closeTabsDelayed(firstPosition, position);
-            firstTab = null;
-            firstPosition = GameFragmentContract.DEF_POSITION;
+            if (cardId != item.getId()) {
+                openPositions.add(position);
+                view.closeTabsDelayed(new ArrayList<>(openPositions));
+            }
+            else if(openPositions.size() < SAME_CARDS) {
+                openPositions.add(position);
+                if(openPositions.size() != SAME_CARDS) return;
+            }
+            cardId = DEF_CARD_ID;
+            openPositions.clear();
             if (view.areAllTabsOpened()) view.showGameWon();
         }
     }

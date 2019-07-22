@@ -14,6 +14,8 @@ import com.mdgd.memorygame.R;
 import com.mdgd.memorygame.dto.GameTab;
 import com.mdgd.memorygame.util.ImageLoader;
 
+import java.util.List;
+
 public class GameTabAdapter extends CommonRecyclerAdapter<GameTab> {
 
     GameTabAdapter(Context context, IOnItemClickListener<GameTab> listener) {
@@ -26,22 +28,18 @@ public class GameTabAdapter extends CommonRecyclerAdapter<GameTab> {
         return new GameTabVH(inflater.inflate(R.layout.item_game_tab, parent, false));
     }
 
-    void closeTabs(int firstPosition, int position) {
-        if (firstPosition != GameFragmentContract.DEF_POSITION) {
-            items.get(firstPosition).setIsOpened(false);
-            notifyItemChanged(firstPosition);
-        }
-        if (position != GameFragmentContract.DEF_POSITION) {
-            items.get(position).setIsOpened(false);
-            notifyItemChanged(position);
-        }
-    }
-
     boolean areAllTabsOpened() {
         for (GameTab tab : items) {
             if (!tab.getIsOpened()) return false;
         }
         return true;
+    }
+
+    void closeTabs(List<Integer> openPositions) {
+        for(Integer i : openPositions){
+            items.get(i).setIsOpened(false);
+            notifyItemChanged(i);
+        }
     }
 
 

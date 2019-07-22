@@ -36,7 +36,7 @@ public class GameFragment extends RecyclerFragment<GameFragmentContract.IPresent
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        recycler.setLayoutManager(new GridLayoutManager(getActivity(), 10));
+        recycler.setLayoutManager(new GridLayoutManager(getActivity(), presenter.getSpanCount()));
         presenter.createGame();
     }
 
@@ -52,8 +52,8 @@ public class GameFragment extends RecyclerFragment<GameFragmentContract.IPresent
     }
 
     @Override
-    public void closeTabsDelayed(int firstPosition, int position) {
-        recycler.postDelayed(() -> ((GameTabAdapter) adapter).closeTabs(firstPosition, position), 1000);
+    public void closeTabsDelayed(List<Integer> openPositions) {
+        recycler.postDelayed(() -> ((GameTabAdapter) adapter).closeTabs(openPositions), 1000);
     }
 
     @Override
